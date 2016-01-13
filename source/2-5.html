@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>EzWeatherComp</title>
+	<script src="lib/jquery.min.js"></script>
+	<script src="lib/react.js"></script>
+	<script src="lib/JSXTransformer.js"></script>
+	<!--组件样式-->
+	<style>
+		.ez-weather{
+			background : black;
+			color:white;
+			padding:10px;
+		}
+		.ez-search{
+			display: flex;
+			flex-flow:row nowrap;		
+		}
+		.ez-search input{
+			flex : 1 0 auto;
+		}
+		.ez-search button{
+			width:100px;
+			margin:0px 10px;
+		}
+	</style>
+</head>
+<body>
+	<div id="content"></div>
+	<script type = "text/jsx">
+		//定义组件
+		var EzWeatherComp = React.createClass({
+			//设置初始状态
+			getInitialState : function(){
+				return {waiting:false};
+			},
+			//点击按钮时执行搜索
+			search : function(){
+				//使用FindDOMNOde()方法读取用户输入值
+				var el = React.findDOMNode(this.refs.q),
+					city = el.value;
+
+				//设置为等待状态
+				this.setState({waiting:true,info:null});
+					
+				//抓取天气数据。不知道这个API能用多久:-(
+				var url = ["http://api.openweathermap.org/data/2.5/weather?q=",
+							city,",China"].join("");							
+				$.ajax({
+					url:url,
+					dataType : "jsonp",//jsonp方式跨域读取
+					success:function(data){
+						//取消等待，设置天气数据
+						this.setState({waiting:false,info:data});
+					}.bind(this)   //bind()让函数体内的this指向组件实例
+				});
+			},
+			render : function(){
+				var waitingEl,infoEl;
+				
+				if(this.state.waiting) //是否需要显示等待动画？
+					waitingEl = <img src="img/waiting.gif"/>;
+				
+				if(this.state.info) //是否需要显示天气数据?
+					infoEl = <pre>
+								{JSON.stringify(this.state.info,null,"\t")}
+							</pre>;
+					
+				return 	<div className="ez-weather">
+							<div className="ez-search">
+								<input type="text" defaultValue="beijing" ref="q"
+									placeholder="请输入城市拼音，如：beijing"/>
+								<button onClick={this.search}>search</button>
+							</div>
+							{waitingEl}
+							{infoEl}
+						</div>;
+			}
+		});
+		//渲染
+		React.render(
+			<EzWeatherComp/>,
+			document.querySelector("#content"));
+
+	</script>
+</body>
+</html>

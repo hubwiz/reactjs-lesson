@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Component Mixins</title>
+	<script src="lib/react.js"></script>
+	<script src="lib/JSXTransformer.js"></script>
+	<style>
+		.ez-logger{
+			position:fixed;
+			left:0px;
+			bottom:0px;
+			height:100px;
+			width:100%;
+			background:#000;			
+			color:#fff;
+		}
+	</style>
+</head>
+<body>
+	<div id="content"></div>
+	<script type = "text/jsx">
+		//日志mixin
+		var EzLoggerMixin = {
+			log:function(txt){
+				//按需撞见日志板DOM对象
+				if(!window._logger_){
+					var el = window._logger_  = document.createElement("pre");
+					el.className = "ez-logger";
+					document.body.appendChild(el);
+				}
+				//计算时间戳
+				var time = new Date,
+					h = time.getHours(),
+					m = time.getMinutes(),
+					s = time.getSeconds(),
+					ts = [h,m,s].join(":");
+					
+				//this.constructor.displayName表示组件的显示名，React自动设置该属性	
+				var compName = "[" + this.constructor.displayName + "]";
+				
+				//输出到日志板
+				window._logger_.innerText = [window._logger_.innerText, ts + compName + " : " + txt].join("\n");
+			}
+		};
+		//组件1定义
+		var EzDemo1Comp = React.createClass({
+			mixins : [EzLoggerMixin], //使用日志mixin
+			componentDidMount : function(){
+				this.log("component rendered!");
+			},
+			render : function(){
+				this.log("rendering the component");
+				return 	<div>
+							<p>This is a demo component.</p>
+						</div>;
+			}
+		});
+		//组件2定义
+		var EzDemo2Comp = React.createClass({
+			mixins : [EzLoggerMixin],  //使用日志mixin
+			componentDidMount : function(){
+				this.log("component rendered!");
+			},
+			render : function(){
+				this.log("rendering the component");
+				return 	<div>
+							<p>This is another demo component.</p>
+						</div>;
+			}
+		});
+		//渲染
+		React.render(
+			<div>
+				<EzDemo1Comp/>
+				<EzDemo2Comp/>
+			</div>,
+			document.querySelector("#content"));
+	</script>
+</body>
+</html>

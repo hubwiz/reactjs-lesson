@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>ex15:EzLampComp</title>
+	<script src="lib/react.js"></script>
+	<script src="lib/JSXTransformer.js"></script>
+	<style>
+		.ez-lamp{
+			display : inline-block;
+			margin : 5px;
+			width : 30px;
+			height : 30px;
+		}
+	</style>
+</head>
+<body>
+	<div id="content"></div>
+	<script type = "text/jsx">
+		//定义React组件
+		var EzLampComp = React.createClass({
+			render : function(){
+				//取得属性值
+				var color = this.props.color,
+					onoff = this.props.onoff;
+				//亮光颜色
+				var lights = {
+					"off":"#888",
+					"on":"#fff"
+				};
+				//透明度
+				var opacity ={
+					"off":0.5,
+					"on":1.0
+				};
+				//根据属性设置附加的样式
+				var style = {
+					borderRadius : "50%",  //对应样式：border-radius
+					opacity : opacity[this.props.onoff], 
+					background : "-webkit-radial-gradient(30% 30%," + lights[onoff] + " 5%," + color +" 95%)"
+				};
+				//返回React元素
+				return <span className="ez-lamp" style={style}></span>;  //JSX
+			}
+		});
+		//渲染React元素
+		React.render(
+			//JSX-->
+			<div>
+				<EzLampComp color="green" onoff="off"/> 
+				<EzLampComp color="green" onoff="on"/> 
+				<EzLampComp color="red" onoff="off"/> 
+				<EzLampComp color="red" onoff="on"/> 
+				<EzLampComp color="blue" onoff="off"/> 
+				<EzLampComp color="blue" onoff="on"/> 
+			</div>
+			//<--JSX
+			,document.querySelector("#content"));
+	</script>
+</body>
+</html>

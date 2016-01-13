@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>JSX Transform</title>
+	<!--引入React库-->
+	<script src="lib/react.min.js"></script>
+	<!--引入JSX转换库-->
+	<script src="lib/JSXTransformer.js"></script>
+	<!--组件样式-->
+	<style>
+		@font-face {
+			font-family:"LED";
+			src:url("font/LED.eot?") format("eot"),
+				url("font/LED.woff") format("woff"),
+				url("font/LED.ttf") format("truetype"),
+				url("font/LED.svg#LED") format("svg");
+			font-weight:normal;
+			font-style:normal;
+		}
+		.ez-led{
+			font-family : "LED";
+			font-size : 40px;
+			background : #70d355;
+			width: 300px;
+			height:60px;
+			line-height : 60px;
+			text-align : right;
+			padding : 10px;
+			letter-spacing:5px;
+		}
+	</style>
+</head>
+<body>
+	<!--定义容器-->
+	<div id="content">
+		<button onclick="transform();">模拟JSX自动处理过程</button>
+	</div>
+
+	<!--为避免自动转化，声明脚本类型为JSX2-->
+	<script type="text/jsx2" id="demo">
+
+		//定义React组件
+		var EzLedComp = React.createClass({
+			//每个React组件都应该事先render()方法
+			render : function(){
+				var e = 
+				
+					//JSX--> 
+					<div>
+						<div className="ez-led">Hello, React!</div>
+						<div className="ez-led">2015-04-15</div>
+					</div>;
+					//<--JSX
+
+				return e;
+			}
+		});
+		//渲染
+		React.render(
+			<EzLedComp/> , //JSX
+			document.querySelector("#content"));
+			
+	</script>
+	<script type="text/javascript">
+		//模拟JSX语法转换
+		var transform = function(){
+			var el = document.querySelector("#demo"),
+				//1.将原始JSX代码转换为JS代码
+				jsxt = JSXTransformer.transform(el.text);  
+
+			var headEl = document.querySelector("head"),
+				scriptEl = document.createElement("script");
+			
+			//2.设置新的script元素的内容为转换后的代码	
+			scriptEl.text = jsxt.code;
+			scriptEl.type = "text/javascript";
+			
+			//3.将新的script元素追加到文档head元素
+			headEl.appendChild(scriptEl);					
+		};
+	</script>
+</body>
+</html>

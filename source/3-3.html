@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>动画 : CSS3 Transition</title>
+	<script src="lib/react.min.js"></script>
+	<script src="lib/JSXTransformer.js"></script>
+	<!--组件样式-->
+	<style>
+		.ez-gauge{
+			position:relative;
+			display:inline-block;
+		}
+		.ez-gauge .pointer{
+			position : absolute;
+			left : 149px;
+			top : 104px;
+			transform-origin : 1px 45px;
+			transition : transform 2s;
+		}
+	</style>
+</head>
+<body>
+	<div id="content"></div>
+	<script type = "text/jsx">
+		//组件定义
+		var EzGaugeComp = React.createClass({
+			//声明初始状态
+			getInitialState : function(){
+				return {
+					value : 0, 			//速度值
+					mounted : false    //是否已挂接到DOM
+				};
+			},
+			//首次渲染后改变状态
+			componentDidMount : function(){
+				this.setState({mounted : true});
+			},
+			//校验属性值，无效时不刷新界面
+			shouldComponentUpdate : function(nextProps,nextState){
+				if(nextProps.value > 220 || nextProps.value<0) return false;
+				return true;
+			},
+			render : function(){
+				//速度为0时的旋转角度
+				var degree = -201;
+				//根据属性值计算旋转角度
+				if(this.state.mounted){
+					degree = (this.props.value / 220) * 265 - 201;
+					//确保之前设置的样式生效
+					window.getComputedStyle(React.findDOMNode(this.refs.ptr)).transform;
+				}
+				//表针样式
+				var style={
+					transform : "rotate("+degree+"deg)"
+				};
+				return (
+					<div className="ez-gauge">
+						<img src="img/gauge.jpg" />
+						<img src="img/gauge-pointer.jpg" className="pointer" style={style} ref="ptr"/>
+					</div>
+				);
+			}
+		});
+		//渲染
+		React.render(
+			<EzGaugeComp  value="200"/>,
+			document.querySelector("#content"));
+	</script>
+</body>
+</html>
